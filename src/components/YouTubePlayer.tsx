@@ -3,7 +3,7 @@ import YouTube from "react-youtube";
 
 let player = null
 
-export default function YouTubePlayer() {
+export default function YouTubePlayer(props) {
 
   const handlePlayerReady = (e) => {
     // if (player) return
@@ -20,7 +20,7 @@ export default function YouTubePlayer() {
     <>
       <Button onClick={playVideo}>PLAY</Button>
       <YouTube
-        videoId='LtCMpsAw1Ho'
+        videoId={props.videoId}
         onStateChange={(e) => console.log(e.target.getCurrentTime())}
         onReady={handlePlayerReady}
       />

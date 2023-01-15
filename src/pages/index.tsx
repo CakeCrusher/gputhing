@@ -8,8 +8,17 @@ import ListItemText from '@mui/material/ListItemText';
 import YouTubePlayer from '../components/YouTubePlayer'
 // import home.module.css
 import styles from '@/styles/Home.module.css'
+import { Button } from '@mui/material';
 
 export default function Home() {
+  const [videoId, setVideoId] = useState('5hPfvflvK0c')
+  const changeVideoId = () => {
+    if (videoId === "KxCh78tscHU") {
+      setVideoId("5hPfvflvK0c")
+    } else {
+      setVideoId("KxCh78tscHU")
+    }
+  }
   const videoSize = {
     width: 560,
     height: 315
@@ -32,7 +41,9 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <YouTubePlayer />
+      <Button onClick={changeVideoId}>Change Video</Button>
+      <YouTubePlayer videoId={"KxCh78tscHU"} />
+      <YouTubePlayer videoId={videoId} />
       <div className={styles.container}>
         <div id="player"></div>
         {/* add game field */}
