@@ -9,7 +9,6 @@ import { Autocomplete, Button } from '@mui/material';
 import query from '@/utils/query'
 import { VideosContext } from '@/components/context/VideosContext';
 import VideoPlayers from '../components/VideoPlayers'
-import { updateVideo } from '@/utils/functions';
 
 type GameDetails = null | {
   game: string | null,
