@@ -6,6 +6,9 @@
   height: 100vh;
   width: 100vw;
 }
+.field {
+  width: 15rem;
+}
 .inputsAndDataWrapper {
   display: flex;
   width: 100vw;
