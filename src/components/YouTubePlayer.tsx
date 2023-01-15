@@ -17,13 +17,13 @@ export default function YouTubePlayer() {
   }
 
   return (
-    <div>
+    <>
       <Button onClick={playVideo}>PLAY</Button>
       <YouTube
         videoId='LtCMpsAw1Ho'
         onStateChange={(e) => console.log(e.target.getCurrentTime())}
         onReady={handlePlayerReady}
       />
-    </div>
+    </>
   )
 }

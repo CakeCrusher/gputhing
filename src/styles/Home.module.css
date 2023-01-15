@@ -1,0 +1,41 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+}
+.inputsAndDataWrapper {
+  display: flex;
+  width: 100vw;
+  justify-content: center;
+  align-items: center;
+}
+.inputAndDataContainer {
+  display: flex;
+  flex-direction: column;
+  width: 30vw;
+  justify-content: center;
+  align-items: center;
+}
+.details {
+  width: 100%,
+}
+.videoWrapper {
+  display: flex;
+  width: 100vw;
+  justify-content: center;
+  align-items: center;
+  background-color: red;
+  padding: 0;
+  margin: 0;
+}
+.videoContainer {
+  position: relative;
+  background-color: blue;
+  overflow: hidden;
+}
+.videoIframe {
+  position: relative;
+}
