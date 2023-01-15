@@ -107,7 +107,8 @@ export default function Home() {
 
       <div className={styles.container}>
         <div id="player">
-          <VideoPlayers videoData1={null} videoData2={null} />
+          {/* TODO: clean up*/}
+          <VideoPlayers videoData1={videos[0]} videoData2={videos[1]} />
         </div>
         {/* add game field */}
         <Autocomplete

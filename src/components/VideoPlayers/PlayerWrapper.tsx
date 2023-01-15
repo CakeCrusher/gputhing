@@ -10,8 +10,8 @@ let player2: null | YouTubePlayer = null
 
 //TODO: replace any
 type Props = {
-  videoData1: any, 
-  videoData2: any
+  videoData1: GpuData | null, 
+  videoData2: GpuData | null
 }
 
 /* TODO: Replace CONTROLS_COMPONENT & VIDEO_CONTEXT
@@ -119,7 +119,7 @@ export default function PlayerWrapper({
       >
         <YouTubePlayerComponent
           handlePlayerReady={handlePlayerReady(1)}
-          videoId={"KxCh78tscHU"}
+          videoId={videoData1 ? videoData1.videoId : ""}
           width={splitPosition * 99}
         />
         <div 
@@ -128,7 +128,7 @@ export default function PlayerWrapper({
         />
         <YouTubePlayerComponent
           handlePlayerReady={handlePlayerReady(2)} 
-          videoId={videoId}
+          videoId={videoData2 ? videoData2.videoId : ""}
           width={99 - splitPosition * 99}
         />
       </div>
