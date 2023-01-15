@@ -92,6 +92,6 @@ const VIDEOS: VideoData = {
 
 export default {
   getVideo: (game: string, gpu: string) => {
-    return VIDEOS[game].gpu[gpu];
+    return VIDEOS[game].gpus[gpu];
   }
 }
