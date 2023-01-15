@@ -1,22 +1,3 @@
-type GpuData = {
-  gpu: string,
-  videoId: string,
-  offset: string,
-  width: number,
-  start: string,
-  duration: number,
-  dlss: string
-}
-
-type VideoData = {
-  [key: string]: {
-    title: string,
-    gpus: {
-      [key: string]: GpuData
-    }
-  }
-}
-
 const VIDEOS: VideoData = {
     "Cyberpunk 2077": {
         title: "Cyberpunk 2077",
@@ -92,6 +73,13 @@ const VIDEOS: VideoData = {
 
 export default {
   getVideo: (game: string, gpu: string) => {
+    if (!VIDEOS[game]) return null;
+    if (!VIDEOS[game].gpus[gpu]) return null;
     return VIDEOS[game].gpus[gpu];
+  },
+  getGpusForGame: (game: string) => {
+    // get the keys of the gpus object
+    if (!VIDEOS[game]) return [];
+    return Object.keys(VIDEOS[game].gpus);
   }
 }

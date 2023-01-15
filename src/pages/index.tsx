@@ -1,33 +1,99 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext, useMemo, Dispatch, SetStateAction } from 'react'
 import Head from 'next/head'
 import TextField from '@mui/material/TextField';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import VideoPlayers from '../components/VideoPlayers'
 import styles from '@/styles/Home.module.css'
+import { Autocomplete, Button } from '@mui/material';
+import query from '@/utils/query'
+import { VideosContext } from '@/components/context/VideosContext';
+import VideoPlayers from '../components/VideoPlayers'
+
+type GameDetails = null | {
+  game: string | null,
+  gpus: string[]
+}
 
 export default function Home() {
-  const [videoId, setVideoId] = useState('5hPfvflvK0c')
-  const changeVideoId = () => {
-    if (videoId === "KxCh78tscHU") {
-      setVideoId("5hPfvflvK0c")
+  const videos = useContext(VideosContext)
+
+  const [gameDetails, setGameDetails] = useState<GameDetails>(null)
+  const [gpuLeft, setGpuLeft] = useState<string | null>(null)
+  const [gpuRight, setGpuRight] = useState<string | null>(null)
+
+  // update gpuRight and gpuLeft if the gameDetails changes
+  useEffect(() => {
+    console.log("gpuLeft: ", gpuLeft)
+    if (gpuLeft && (gameDetails && !gameDetails?.gpus.includes(gpuLeft))) {
+      console.log("gpuLeft unset in useEffect")
+      setGpuLeft(null)
+    }
+    if (gpuRight && !gameDetails?.gpus.includes(gpuRight)) {
+      setGpuRight(null)
+    }
+  }, [gameDetails, gpuLeft, setGpuLeft, gpuRight, setGpuRight ])
+
+  // updates the context for the videos
+  useEffect(() => {
+    if (gpuLeft && gameDetails?.game) {
+      const newVideo = query.videos.getVideo(gameDetails?.game, gpuLeft)
+      videos[0] = newVideo ? newVideo : null
     } else {
-      setVideoId("KxCh78tscHU")
+      videos[0] = null
+    }
+  }, [gameDetails, gpuLeft])
+  useEffect(() => {
+    if (gpuRight && gameDetails?.game) {
+      const newVideo = query.videos.getVideo(gameDetails?.game, gpuRight)
+      videos[1] = newVideo ? newVideo : null
+    } else {
+      videos[1] = null
+    }
+  }, [gameDetails, gpuRight])
+
+  const allGames = query.games.getAllGames()
+  const allGpus = query.gpus.getAllGpus()
+
+  const handleSetGame = (value: string | null) => {
+    if (value && allGames.includes(value) && value !== gameDetails?.game) {
+      console.log("game set")
+      const gpusForGame = query.videos.getGpusForGame(value)
+      setGameDetails({
+        game: value,
+        gpus: gpusForGame
+      })
+    } else {
+      if (gameDetails !== null) {
+        setGameDetails(null)
+      }
     }
   }
+
+  const handleGpuSet = (value: string | null, state: string | null, stateSet: Dispatch<SetStateAction<string | null>>, contextIdx: number) => {
+    console.log(value)
+    if (value && allGpus.includes(value)) {
+      console.log("gpu set")
+      stateSet(value)
+    } else {
+      console.log("gpu unset")
+      if (state !== null) {
+        stateSet(null)
+      }
+    }
+  }
+
+  
+
   const videoSize = {
     width: 560,
     height: 315
   }
 
-  // create a style for inputsAndDataWrapper
-  const inputsAndDataWrapperStyle = {
-    display: 'flex',
-    width: '100vw',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'red',
+  const isGpuOptionDisabled = (option: string, gpusInUse: any[]): boolean => {
+    const isGpuInUse = gpusInUse.includes(option)
+    const isGpuInGame = Boolean(gameDetails?.gpus && !gameDetails?.gpus?.includes(option))
+    return  isGpuInUse || isGpuInGame
   }
 
   return (
@@ -39,18 +105,31 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-
       <div className={styles.container}>
         <div id="player">
           <VideoPlayers videoData1={null} videoData2={null} />
         </div>
         {/* add game field */}
-        <TextField id="standard-basic" label="Game" variant="standard" />
+        <Autocomplete
+          disablePortal
+          className={styles.field}
+          onChange={(e, value) => handleSetGame(value)}
+          options={allGames}
+          renderInput={(params) => <TextField {...params} label="Game" variant="standard" />}
+        />
         {/* add flex horizontal container */}
         <div className={styles.inputsAndDataWrapper}>
           {/* left inputAndData*/}
           <div className={styles.inputAndDataContainer}>
-            <TextField id="standard-basic" label="Left GPU" variant="standard" />
+            <Autocomplete
+              disablePortal
+              className={styles.field}
+              value={gpuLeft}
+              onChange={(e, value) => handleGpuSet(value, gpuLeft, setGpuLeft, 0)}
+              options={allGpus}
+              getOptionDisabled={(option) => isGpuOptionDisabled(option, [gpuRight])}
+              renderInput={(params) => <TextField {...params} label="GPU Left" variant="standard" />}
+            />
             <h3>Details</h3>
             <List className={styles.details}>
               <ListItem>
@@ -63,7 +142,15 @@ export default function Home() {
           </div>
           {/* right inputAndData */}
           <div className={styles.inputAndDataContainer}>
-            <TextField id="standard-basic" label="Right GPU" variant="standard" />
+            <Autocomplete
+              disablePortal
+              className={styles.field}
+              options={allGpus}
+              value={gpuRight}
+              onChange={(e, value) => handleGpuSet(value, gpuRight, setGpuRight, 1)}
+              getOptionDisabled={(option) => isGpuOptionDisabled(option, [gpuLeft])}
+              renderInput={(params) => <TextField {...params} label="GPU Right" variant="standard" />}
+            />
             <h3>Details</h3>
             <List className={styles.details}>
               <ListItem>
