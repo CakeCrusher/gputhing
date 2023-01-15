@@ -51,3 +51,4 @@ const endpoint = (req: NextApiRequest, res: NextApiResponse) => {
 }
 
 export default endpoint;
+
