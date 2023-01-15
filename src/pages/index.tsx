@@ -1,32 +1,27 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import useStyles from './index.style'
 import TextField from '@mui/material/TextField';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import Button from '@mui/material/Button';
-import YouTube from "react-youtube";
+import YouTubePlayer from '../components/YouTubePlayer'
 
 export default function Home() {
-  const classes = useStyles()
-  const [player, setPlayer] = useState(null)
+  let classes = useStyles()
 
   const videoSize = {
     width: 560,
     height: 315
   }
 
-  const handlePlayerReady = (e) => {
-    if (player) return
-    setPlayer(e.target)
-    return
-  }
-
-  const playVideo = () => {
-    console.log("try to play", player)
-    if (!player) return
-    player.playVideo()
+  // create a style for inputsAndDataWrapper
+  const inputsAndDataWrapperStyle = {
+    display: 'flex',
+    width: '100vw',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'red',
   }
 
   return (
@@ -37,21 +32,18 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {/* <Button onClick={playVideo}>PLAY</Button>
-      <YouTube
-        videoId='LtCMpsAw1Ho'
-        onStateChange={(e) => console.log(e.target.getCurrentTime())}
-        onReady={handlePlayerReady}
-      /> */}
+      <div>
+        <YouTubePlayer />
+      </div>
       <div className={classes.container}>
         <div id="player"></div>
         {/* add game field */}
         <TextField id="standard-basic" label="Game" variant="standard" />
         {/* add flex horizontal container */}
-        <div className={classes.inputsAndDataWrapper}>
+        <div style={inputsAndDataWrapperStyle} className={classes.inputsAndDataWrapper}>
           {/* left inputAndData*/}
           <div className={classes.inputAndDataContainer}>
-            <TextField id="standard-basic" label="Left GPU" variant="standard" />
+            <TextField sx={{backgroundColor: "red"}} id="standard-basic" label="Left GPU" variant="standard" />
             <h3>Details</h3>
             <List className={classes.details}>
               <ListItem>
@@ -83,10 +75,8 @@ export default function Home() {
           </div>
           <div style={{width: videoSize.width/2}} className={classes.videoContainer}>
             <iframe style={{left: "-100%"}} className={classes.videoIframe} width="560" height="315" src="https://www.youtube.com/embed/KxCh78tscHU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-            
           </div>
         </div>
-            
       </div>
     </>
   )
