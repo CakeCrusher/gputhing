@@ -1,9 +1,14 @@
 import Button from '@mui/material/Button';
 import YouTube from "react-youtube";
+import type { YouTubePlayer } from "react-youtube";
 
-let player = null
+let player: null | YouTubePlayer = null
 
-export default function YouTubePlayer(props) {
+type Props = {
+  videoId: string
+}
+
+export default function YouTubePlayer(props: Props) {
 
   const handlePlayerReady = (e) => {
     // if (player) return
