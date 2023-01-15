@@ -8,6 +8,7 @@ import styles from '@/styles/Home.module.css'
 import { Autocomplete, Button } from '@mui/material';
 import query from '@/utils/query'
 import { VideosContext } from '@/components/context/VideosContext';
+import VideoPlayers from '../components/VideoPlayers'
 
 type GameDetails = null | {
   game: string | null,
@@ -103,8 +104,11 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
       <div className={styles.container}>
-        <div id="player"></div>
+        <div id="player">
+          <VideoPlayers videoData1={null} videoData2={null} />
+        </div>
         {/* add game field */}
         <Autocomplete
           disablePortal
@@ -156,15 +160,6 @@ export default function Home() {
                 <ListItemText primary="Cores" secondary="4" />
               </ListItem>
             </List>
-          </div>
-        </div>
-        {/* video container */}
-        <div className={styles.videoWrapper}>
-          <div style={{width: videoSize.width/2}} className={styles.videoContainer}>
-              <iframe className={styles.videoIframe} width="560" height="315" src="https://www.youtube.com/embed/5hPfvflvK0c" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>
-          </div>
-          <div style={{width: videoSize.width/2}} className={styles.videoContainer}>
-            <iframe style={{left: "-100%"}} className={styles.videoIframe} width="560" height="315" src="https://www.youtube.com/embed/KxCh78tscHU" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>
           </div>
         </div>
       </div>
