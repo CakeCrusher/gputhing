@@ -9,6 +9,7 @@ import { Autocomplete, Button } from '@mui/material';
 import query from '@/utils/query'
 import { VideosContext } from '@/components/context/VideosContext';
 import VideoPlayers from '../components/VideoPlayers'
+import { updateVideo } from '@/utils/functions';
 
 type GameDetails = null | {
   game: string | null,
@@ -16,7 +17,7 @@ type GameDetails = null | {
 }
 
 export default function Home() {
-  const videos = useContext(VideosContext)
+  const {videos, setVideos} = useContext(VideosContext)
 
   const [gameDetails, setGameDetails] = useState<GameDetails>(null)
   const [gpuLeft, setGpuLeft] = useState<string | null>(null)
@@ -25,32 +26,40 @@ export default function Home() {
   // update gpuRight and gpuLeft if the gameDetails changes
   useEffect(() => {
     console.log("gpuLeft: ", gpuLeft)
-    if (gpuLeft && (gameDetails && !gameDetails?.gpus.includes(gpuLeft))) {
+    if (gpuLeft && gameDetails && !gameDetails?.gpus.includes(gpuLeft)) {
       console.log("gpuLeft unset in useEffect")
       setGpuLeft(null)
     }
-    if (gpuRight && !gameDetails?.gpus.includes(gpuRight)) {
+    if (gpuRight && gameDetails && !gameDetails?.gpus.includes(gpuRight)) {
       setGpuRight(null)
     }
   }, [gameDetails, gpuLeft, setGpuLeft, gpuRight, setGpuRight ])
 
   // updates the context for the videos
   useEffect(() => {
+    console.log("videos updated in useEffect")
+    // left
+    let newVideos: (GpuData | null)[] = [...videos]
     if (gpuLeft && gameDetails?.game) {
+      console.log("videos[0] SET in useEffect")
       const newVideo = query.videos.getVideo(gameDetails?.game, gpuLeft)
-      videos[0] = newVideo ? newVideo : null
+      newVideos[0] = newVideo ? newVideo : null
     } else {
-      videos[0] = null
+      console.log("videos[0] unset in useEffect")
+      newVideos[0] = null
     }
-  }, [gameDetails, gpuLeft])
-  useEffect(() => {
+    // right
     if (gpuRight && gameDetails?.game) {
+      console.log("videos[1] SET in useEffect")
       const newVideo = query.videos.getVideo(gameDetails?.game, gpuRight)
-      videos[1] = newVideo ? newVideo : null
+      newVideos[1] = newVideo ? newVideo : null
     } else {
-      videos[1] = null
+      console.log("videos[1] unset in useEffect")
+      newVideos[1] = null
     }
-  }, [gameDetails, gpuRight])
+
+    if (setVideos) setVideos(newVideos)
+  }, [gameDetails, gpuLeft, gpuRight, setVideos])
 
   const allGames = query.games.getAllGames()
   const allGpus = query.gpus.getAllGpus()

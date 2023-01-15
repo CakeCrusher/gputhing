@@ -1,3 +1,3 @@
-export const videos: (GpuData | null)[] = [
+export const initializeVideos: (GpuData | null)[] = [
   null,null
 ]
