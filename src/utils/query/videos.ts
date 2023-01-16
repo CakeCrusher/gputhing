@@ -1,3 +1,5 @@
+import axios from "axios";
+
 const VIDEOS: VideoData = {
     "Cyberpunk 2077": {
         title: "Cyberpunk 2077",
@@ -72,10 +74,22 @@ const VIDEOS: VideoData = {
 // http://localhost:3000/api/v1/query?game=Cyberpunk+2077&gpus=Nvidia+RTX+4080&gpus=Nvidia+RTX+4070+TI
 
 export default {
-  getVideo: (game: string, gpu: string) => {
-    if (!VIDEOS[game]) return null;
-    if (!VIDEOS[game].gpus[gpu]) return null;
-    return VIDEOS[game].gpus[gpu];
+  getAllVideos: async () => {
+    const videos = await axios.get('/api/v1/videos');
+    return videos.data.map((videos: any) => videos.id);
+  },
+  getVideo: async (game: string, gpu: string) => {
+    const game_gpu = await axios.get(`/api/v1/game_gpu/${encodeURIComponent(`${game}_${gpu}`)}`);
+    const videoId = game_gpu.data.videoIds[0];
+    console.log("videoId", videoId)
+    const video = await axios.get(`/api/v1/videos/${encodeURIComponent(videoId)}`);
+    console.log("video", video.data)
+    const videoData: GpuData = {
+        ...video.data,
+        videoId: video.data.id,
+        gpu: gpu
+    };
+    return videoData;
   },
   getGpusForGame: (game: string) => {
     // get the keys of the gpus object

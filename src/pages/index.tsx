@@ -20,8 +20,17 @@ export default function Home() {
   const [gpuLeft, setGpuLeft] = useState<string | null>(null)
   const [gpuRight, setGpuRight] = useState<string | null>(null)
 
+
   const allGames = query.games.getAllGames()
   const allGpus = query.gpus.getAllGpus()
+
+  const test = async () => {
+    const t = await query.gpus.getGpusForGame("Cyberpunk 2077")
+    console.log("test: ", t)
+  }
+  useEffect(() => {
+    test()
+  }, [])
 
   // update gpuRight and gpuLeft if the gameDetails changes
   useEffect(() => {
@@ -100,3 +109,4 @@ export default function Home() {
     </>
   )
 }
+
