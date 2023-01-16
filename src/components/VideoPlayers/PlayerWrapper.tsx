@@ -104,17 +104,22 @@ export default function PlayerWrapper({
   }
 
   return (
-    <Box>
+    <Box sx={{
+      height: '100%',
+      width: '100%'
+    }}>
       {/* TODO: Remove this when we add controls */}
+      {/*
       <Button onClick={changeVideoId}>Change Video</Button>
       <Button onClick={playVideos}>Play</Button>
       <Button onClick={changeSplit}>Change Split</Button>
+      */}
 
       <div
         id="players"
         style={{
-          margin: "0 25%",
-          display: "flex"
+          display: 'flex',
+          height: '100%',
           }}
       >
         <YouTubePlayerComponent

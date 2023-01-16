@@ -7,6 +7,7 @@ import query from '@/utils/query'
 import VideoPlayers from '@/components/VideoPlayers'
 import VideoQuerySelectors from '@/components/VideoQuerySelectors'
 import VideoPlayerControls from '@/components/VideoPlayerControls';
+import {Box, styled} from '@mui/material';
 
 type GameDetails = null | {
   game: string | null,
@@ -66,6 +67,23 @@ export default function Home() {
     height: 315
   }
 
+  const PlayerWrapperBox = styled(Box)(({ theme }) => ({
+    height: '60%',
+    width: '90%',
+    position: 'relative',
+    overflow: 'hidden',
+    '& #controls': {
+      zIndex: 999,
+      position: 'absolute',
+      bottom: 0
+    },
+    '&:hover': {
+      '& #controls': {
+        bottom: 0,
+      }
+    }
+  }));
+
   return (
     <>
       <Head>
@@ -88,13 +106,14 @@ export default function Home() {
             gpuRight
           }}/>
         </div>
-        <div id="player">
+        <Box sx={{height: '10%'}}/>
+        <PlayerWrapperBox
+          id="player"
+        >
           {/* TODO: clean up*/}
           <VideoPlayers videoData1={videos[0]} videoData2={videos[1]} />
-        </div>
-        <div id="controls">
-          <VideoPlayerControls />
-        </div>
+          <VideoPlayerControls id="controls"/>
+        </PlayerWrapperBox>
         {/* add game field */}
       </div>
     </>
