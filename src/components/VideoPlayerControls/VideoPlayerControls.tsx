@@ -5,9 +5,12 @@ import { PlayArrowSharp } from "@mui/icons-material";
 import CustomSlider from "./CustomSlider";
 
 type Props = {
-  id: string | undefined
+  isPaused: boolean
+  playVideos: () => void
+  pauseVideos: () => void
 }
-export default function VideoPlayerControls({ id }: Props) {
+
+export default function VideoPlayerControls({ isPaused, playVideos, pauseVideos }: Props) {
   const sx: SxProps = {
     display: 'flex',
     flexDirection: 'column',
@@ -15,7 +18,7 @@ export default function VideoPlayerControls({ id }: Props) {
   }
 
   return (
-    <Box sx={sx} id={id} style={{backgroundColor: "rgba(0, 0, 0, 0.6)"}}>
+    <Box sx={sx} id="controls" style={{backgroundColor: "rgba(0, 0, 0, 0.6)"}}>
       <Box sx={{flex: '1'}}>
         <CustomSlider/>
       </Box>
@@ -23,9 +26,15 @@ export default function VideoPlayerControls({ id }: Props) {
         <IconButton sx={{padding: '2', color: 'white'}}>
           <ReplaySharpIcon />
         </IconButton>
-        <IconButton sx={{padding: '2', color: 'white'}}>
-          <PlayArrowSharp />
-        </IconButton>
+        { isPaused ?
+          <IconButton sx={{padding: '2', color: 'white'}} onClick={playVideos}>
+            <PlayArrowSharp />
+          </IconButton>
+          :
+          <IconButton sx={{padding: '2', color: 'yellow'}} onClick={pauseVideos}>
+            <PlayArrowSharp />
+          </IconButton>
+        }
       </Box>
     </Box>
   )

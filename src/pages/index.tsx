@@ -6,7 +6,6 @@ import query from '@/utils/query'
 
 import VideoPlayers from '@/components/VideoPlayers'
 import VideoQuerySelectors from '@/components/VideoQuerySelectors'
-import VideoPlayerControls from '@/components/VideoPlayerControls';
 import {Box, styled} from '@mui/material';
 
 type GameDetails = null | {
@@ -110,11 +109,8 @@ export default function Home() {
         <PlayerWrapperBox
           id="player"
         >
-          {/* TODO: clean up*/}
           <VideoPlayers videoData1={videos[0]} videoData2={videos[1]} />
-          <VideoPlayerControls id="controls"/>
         </PlayerWrapperBox>
-        {/* add game field */}
       </div>
     </>
   )

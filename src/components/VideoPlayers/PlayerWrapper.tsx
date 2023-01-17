@@ -1,9 +1,9 @@
 import { useState } from "react"
-import { Button } from "@mui/material"
 import { Box } from "@mui/system"
 import type { YouTubePlayer, YouTubeEvent } from "react-youtube";
 
 import YouTubePlayerComponent from "./YouTubePlayer"
+import VideoPlayerControls from '@/components/VideoPlayerControls';
 
 let player1: null | YouTubePlayer = null
 let player2: null | YouTubePlayer = null
@@ -28,6 +28,7 @@ export default function PlayerWrapper({
 }: Props){
   const [videoId, setVideoId] = useState('5hPfvflvK0c');
   const [splitPosition, setSplitPosition] = useState(.5); 
+  const [isPaused, setIsPaused] = useState(false);
 
   const changeSplit = (e: any) => {
     const root = document.getElementsByTagName("body")[0];
@@ -76,23 +77,32 @@ export default function PlayerWrapper({
   }
 
   // TODO: Tweak or remove this with controls
-  const playVideos = () => {
+  function _checkVideosLoaded(): boolean {
     if (!player1) {
       console.log("Null player: player1")
-      return
+      return false;
     }
     if (!player2) {
       console.log("Null player: player2")
-      return
+      return false;
     }
-    console.log("PLAY");
-    if(player1.getPlayerState() == 1) {
-      player1.pauseVideo();
-      player2.pauseVideo();
+    return true;
+  }
+
+  const playVideos = () => {
+    if(!_checkVideosLoaded) {
       return;
     }
     player1.playVideo()
     player2.playVideo()
+  }
+
+  const pauseVideos = () => {
+    if(!_checkVideosLoaded) {
+      return;
+    }
+    player1.pauseVideo();
+    player2.pauseVideo();
   }
 
   const changeVideoId = () => {
@@ -137,6 +147,7 @@ export default function PlayerWrapper({
           width={99 - splitPosition * 99}
         />
       </div>
+      <VideoPlayerControls {...{ isPaused, pauseVideos, playVideos }} />
     </Box>
   )
 }
