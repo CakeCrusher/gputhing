@@ -3,22 +3,21 @@ import { styled } from '@mui/material/styles';
 import YouTube from "react-youtube";
 import type { YouTubePlayer, YouTubeEvent } from "react-youtube";
 import {Box} from '@mui/material';
+import {forwardRef, Ref} from 'react';
 
 type Props = {
   videoId: string
   handlePlayerReady: (e: YouTubeEvent) => void;
-  width: number
 }
 
-export default function YouTubePlayer({
+function YouTubePlayer({
   videoId,
   handlePlayerReady,
-  width
-}: Props) {
+}: Props, ref: Ref<HTMLDivElement>) {
 
   const Box2 = styled(Box)(({ theme }) => ({
     height: "100%",
-    width: `${width}%`,
+    width: `49.5%`,
     overflow: "hidden",
     pointerEvents: "none",
     userSelect: "none",
@@ -31,7 +30,7 @@ export default function YouTubePlayer({
   }));
 
   return (
-    <Box2>
+    <Box2 id={videoId} ref={ref}>
       <YouTube
         opts={{
           height: 'auto',
@@ -44,3 +43,5 @@ export default function YouTubePlayer({
     </Box2>
   )
 }
+
+export default forwardRef(YouTubePlayer)

@@ -1,12 +1,15 @@
-import { useState } from "react"
+import { RefObject, useRef, useState } from "react"
 import { Box } from "@mui/system"
 import type { YouTubePlayer, YouTubeEvent } from "react-youtube";
 
 import YouTubePlayerComponent from "./YouTubePlayer"
 import VideoPlayerControls from '@/components/VideoPlayerControls';
+import {backdropClasses} from "@mui/material";
 
-let player1: null | YouTubePlayer = null
-let player2: null | YouTubePlayer = null
+const p: any = {
+  player1: {},
+  player2: {}
+}
 
 //TODO: replace any
 type Props = {
@@ -26,19 +29,19 @@ export default function PlayerWrapper({
   videoData1,
   videoData2
 }: Props){
-  const [videoId, setVideoId] = useState('5hPfvflvK0c');
-  const [splitPosition, setSplitPosition] = useState(.5); 
-  const [isPaused, setIsPaused] = useState(false);
+  const player1Ref = useRef<HTMLDivElement>(null);
+  const player2Ref = useRef<HTMLDivElement>(null);
 
   const changeSplit = (e: any) => {
     const root = document.getElementsByTagName("body")[0];
     const players = document.getElementById("players");
+
     if(!root) {
-      console.warn("No body");
+      console.error("No body");
       return;
     }
     if(!players) {
-      console.warn("No players");
+      console.error("No players");
       return;
     }
 
@@ -52,7 +55,10 @@ export default function PlayerWrapper({
         result = Math.max(result, .1);
         result = Math.min(result, .9);
         
-        setSplitPosition(result);
+        if(player1Ref.current && player2Ref.current) {
+          player1Ref.current.style.width = `${result * 99}%`;
+          player2Ref.current.style.width = `${99 - result * 99}%`;
+        }
       }
     };
     const mouseUp = (e: any) => {
@@ -68,55 +74,19 @@ export default function PlayerWrapper({
     console.log("Player Ready: " + id)
     switch(id) {
       case 1:
-        player1 = e.target
+        p.player1 = e.target
       case 2:
-        player2 = e.target
+        p.player2 = e.target
       default:
         console.warn("Invalid player id: " + id);
-    }
-  }
-
-  // TODO: Tweak or remove this with controls
-  function _checkVideosLoaded(): boolean {
-    if (!player1) {
-      console.log("Null player: player1")
-      return false;
-    }
-    if (!player2) {
-      console.log("Null player: player2")
-      return false;
-    }
-    return true;
-  }
-
-  const playVideos = () => {
-    if(!_checkVideosLoaded) {
-      return;
-    }
-    player1.playVideo()
-    player2.playVideo()
-  }
-
-  const pauseVideos = () => {
-    if(!_checkVideosLoaded) {
-      return;
-    }
-    player1.pauseVideo();
-    player2.pauseVideo();
-  }
-
-  const changeVideoId = () => {
-    if (videoId === "KxCh78tscHU") {
-      setVideoId("5hPfvflvK0c")
-    } else {
-      setVideoId("KxCh78tscHU")
     }
   }
 
   return (
     <Box sx={{
       height: '100%',
-      width: '100%'
+      width: '100%',
+      backgroundColor: 'black'
     }}>
       {/* TODO: Remove this when we add controls */}
       {/*
@@ -133,21 +103,21 @@ export default function PlayerWrapper({
           }}
       >
         <YouTubePlayerComponent
+          ref={player1Ref}
           handlePlayerReady={handlePlayerReady(1)}
           videoId={videoData1 ? videoData1.videoId : ""}
-          width={splitPosition * 99}
         />
         <div 
           onMouseDown={changeSplit}
           style={{width: "1%", backgroundColor: "black", cursor: "crosshair"}}
         />
         <YouTubePlayerComponent
+          ref={player2Ref}
           handlePlayerReady={handlePlayerReady(2)} 
           videoId={videoData2 ? videoData2.videoId : ""}
-          width={99 - splitPosition * 99}
         />
       </div>
-      <VideoPlayerControls {...{ isPaused, pauseVideos, playVideos }} />
+      <VideoPlayerControls p={p}/>
     </Box>
   )
 }
