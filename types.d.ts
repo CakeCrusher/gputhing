@@ -13,15 +13,6 @@ type VideoExt = {
   dlss: string;
 };
 
-type VideoData = {
-  [key: string]: {
-    title: string;
-    gpus: {
-      [key: string]: VideoExt;
-    };
-  };
-};
-
 type Game = {
   id: string;
 };

@@ -12,7 +12,7 @@ const endpoint = async (_req: NextApiRequest, res: NextApiResponse) => {
   const videoData: Video = {
     id: video.id,
     ...video.data()
-  }
+  } as Video;
 
   res.send(videoData);
 }
