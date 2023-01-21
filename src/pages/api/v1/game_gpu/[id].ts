@@ -9,10 +9,12 @@ const endpoint = async (_req: NextApiRequest, res: NextApiResponse) => {
 
   const video = await db.collection('game_gpu').doc(decodeURIComponent(id)).get();
 
-  res.send({
+  const videoData: GameGpu = {
     id: video.id,
     ...video.data()
-  });
+  } as GameGpu;
+
+  res.send(videoData);
 }
 
 export default endpoint;

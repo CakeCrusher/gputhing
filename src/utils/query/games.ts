@@ -7,9 +7,9 @@ const GAMES = [
 ];
 
 export default {
-  getAllGames: async () => {
+  getAllGames: async (): Promise<Game[]> => {
     const games = await axios.get('/api/v1/games');
-    return games.data.map((games: any) => games.id);
+    return games.data;
     // return GAMES;
   }
 

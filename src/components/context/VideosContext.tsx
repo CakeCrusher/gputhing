@@ -1,22 +1,27 @@
-import React, { Context, createContext, useState } from 'react';
-import { initializeVideos  } from './videos'
+import React, { Context, createContext, useState } from "react";
+import { initializeVideos } from "./videos";
 
 type VideosContextProviderProps = {
-  children: React.ReactNode
-}
+  children: React.ReactNode;
+};
 
 type VideosContextValue = {
-  videos: (GpuData | null)[],
-  setVideos: React.Dispatch<React.SetStateAction<(GpuData | null)[]>> | null
-}
+  videos: (VideoExt | null)[];
+  setVideos: React.Dispatch<React.SetStateAction<(VideoExt | null)[]>> | null;
+};
 
-export const VideosContext: Context<VideosContextValue> = createContext({videos: initializeVideos, setVideos: null} as VideosContextValue)
+export const VideosContext: Context<VideosContextValue> = createContext({
+  videos: initializeVideos,
+  setVideos: null,
+} as VideosContextValue);
 
-export const VideosContextProvider = ({ children }: VideosContextProviderProps) => {
-  const [videos, setVideos] = useState<(GpuData | null)[]>(initializeVideos)
+export const VideosContextProvider = ({
+  children,
+}: VideosContextProviderProps) => {
+  const [videos, setVideos] = useState<(VideoExt | null)[]>(initializeVideos);
   return (
-    <VideosContext.Provider value={{videos, setVideos}}>
+    <VideosContext.Provider value={{ videos, setVideos }}>
       {children}
     </VideosContext.Provider>
-  )
-}
+  );
+};

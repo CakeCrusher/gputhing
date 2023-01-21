@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import db from '@/utils/db';
 
+// returns type res Gpu or res 400 error
 const endpoint = async (_req: NextApiRequest, res: NextApiResponse) => {
   // get params from query string
   const { game } = _req.query;
@@ -11,9 +12,8 @@ const endpoint = async (_req: NextApiRequest, res: NextApiResponse) => {
 
     const game_gpus = await db.collection('game_gpu').where('game', '==', decodeURIComponent(game)).get();
     const gpusArr = game_gpus.docs.map(gpu => gpu.data().gpu);
-    console.log(gpusArr);
     // TODO: eliminate this for loop
-    let gpus = []
+    let gpus: Gpu[] = []
     for (let i = 0; i < gpusArr.length; i++) {
       const gpu = await db.collection('gpus').doc(gpusArr[i]).get();
       gpus.push({
@@ -26,13 +26,14 @@ const endpoint = async (_req: NextApiRequest, res: NextApiResponse) => {
 
   const gpus = await db.collection('gpus').get();
 
-
-  res.send(gpus.docs.map(gpu => {
+  const gpusData: Gpu[] = gpus.docs.map(gpu => {
     return {
       id: gpu.id,
       ...gpu.data()
     }
-  }));
+  })
+
+  res.send(gpusData);
 
 }
 

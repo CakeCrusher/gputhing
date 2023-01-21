@@ -1,4 +1,4 @@
-import {Dispatch, SetStateAction} from 'react';
+import {Dispatch, SetStateAction, useMemo} from 'react';
 import { Autocomplete, Box } from '@mui/material';
 import styles from '@/styles/Home.module.css'
 import query from '@/utils/query'
@@ -9,20 +9,17 @@ import {
   TextField
 } from '@mui/material';
 
-type GameDetails = null | {
-  game: string | null,
-  gpus: string[]
-}
+
 
 type Props = {
   gameDetails: GameDetails;
-  setGameDetails: any;
+  setGameDetails: Dispatch<SetStateAction<GameDetails>>;
   gpuLeft: string | null;
   setGpuLeft: Dispatch<SetStateAction<string | null>>;
   setGpuRight: Dispatch<SetStateAction<string | null>>;
   gpuRight: string | null;
-  allGames: any;
-  allGpus: any;
+  allGames: Game[];
+  allGpus: Gpu[];
 }
 
 export default function VideoQuerySelectors({
@@ -35,13 +32,17 @@ export default function VideoQuerySelectors({
   gpuLeft,
   gpuRight
 }: Props) {
+  const allGameIds = useMemo(() => allGames.map((game) => game.id), [allGames]);
+  const allGpuIds = useMemo(() => allGpus.map((gpu) => gpu.id), [allGpus]);
 
-  const handleSetGame = (value: string | null) => {
-    if (value && allGames.includes(value) && value !== gameDetails?.game) {
+  const handleSetGame = async (value: string | null) => {
+    const currentGame = allGames.find((game: Game) => game.id === value)
+    if (value && currentGame && (!gameDetails?.game || value !== gameDetails?.game.id)) {
       console.log("game set")
-      const gpusForGame = query.videos.getGpusForGame(value)
+      console.log("setting game", allGames, value)
+      const gpusForGame = await query.gpus.getGpusForGame(value)
       setGameDetails({
-        game: value,
+        game: currentGame,
         gpus: gpusForGame
       })
     } else {
@@ -58,7 +59,8 @@ export default function VideoQuerySelectors({
     contextIdx: number
   ) => {
     console.log(value)
-    if (value && allGpus.includes(value)) {
+    const currentGpu = allGpus.find((gpu: Gpu) => gpu.id === value)
+    if (value && currentGpu) {
       console.log("gpu set")
       stateSet(value)
     } else {
@@ -71,7 +73,7 @@ export default function VideoQuerySelectors({
 
   const isGpuOptionDisabled = (option: string, gpusInUse: any[]): boolean => {
     const isGpuInUse = gpusInUse.includes(option)
-    const isGpuInGame = Boolean(gameDetails?.gpus && !gameDetails?.gpus?.includes(option))
+    const isGpuInGame = Boolean(gameDetails?.gpus && !gameDetails?.gpus?.find((gpu: Gpu) => gpu.id === option))
     return  isGpuInUse || isGpuInGame
   }
 
@@ -81,7 +83,7 @@ export default function VideoQuerySelectors({
         disablePortal
         className={styles.field}
         onChange={(_e, value: string | null) => handleSetGame(value)}
-        options={allGames}
+        options={allGameIds}
         renderInput={(params) => <TextField {...params} label="Game" variant="standard" />}
       />
       {/* add flex horizontal container */}
@@ -93,7 +95,7 @@ export default function VideoQuerySelectors({
             className={styles.field}
             value={gpuLeft}
             onChange={(_e, value) => handleGpuSet(value, gpuLeft, setGpuLeft, 0)}
-            options={allGpus}
+            options={allGpuIds}
             getOptionDisabled={(option) => isGpuOptionDisabled(option, [gpuRight])}
             renderInput={(params) => <TextField {...params} label="GPU Left" variant="standard" />}
           />
@@ -103,7 +105,7 @@ export default function VideoQuerySelectors({
           <Autocomplete
             disablePortal
             className={styles.field}
-            options={allGpus}
+            options={allGpuIds}
             value={gpuRight}
             onChange={(_e, value) => handleGpuSet(value, gpuRight, setGpuRight, 1)}
             getOptionDisabled={(option) => isGpuOptionDisabled(option, [gpuLeft])}

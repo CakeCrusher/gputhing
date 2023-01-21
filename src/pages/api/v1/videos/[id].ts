@@ -9,10 +9,12 @@ const endpoint = async (_req: NextApiRequest, res: NextApiResponse) => {
 
   const video = await db.collection('videos').doc(decodeURIComponent(id)).get();
 
-  res.send({
+  const videoData: Video = {
     id: video.id,
     ...video.data()
-  });
+  }
+
+  res.send(videoData);
 }
 
 export default endpoint;

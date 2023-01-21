@@ -42,13 +42,13 @@ const GPUS = [
 ];
 
 export default {
-  getAllGpus: async () => {
+  getAllGpus: async (): Promise<Gpu[]> => {
     const gpus = await axios.get('/api/v1/gpus');
-    return gpus.data.map((gpu: any) => gpu.id);
+    return gpus.data;
   },
-  getGpusForGame: async (game: string) => {
+  getGpusForGame: async (game: string): Promise<Gpu[]> => {
     const gpus = await axios.get(`/api/v1/gpus?game=${encodeURIComponent(game)}`);
-    return gpus.data.map((gpu: any) => gpu.id);
+    return gpus.data;
   }
 };
 
