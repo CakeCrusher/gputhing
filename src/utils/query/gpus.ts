@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const GPUS = [
   "Nvidia RTX 4090",
   "Nvidia RTX 4080",
@@ -40,8 +42,13 @@ const GPUS = [
 ];
 
 export default {
-  getAllGpus: () => {
-    return GPUS;
+  getAllGpus: async () => {
+    const gpus = await axios.get('/api/v1/gpus');
+    return gpus.data.map((gpu: any) => gpu.id);
+  },
+  getGpusForGame: async (game: string) => {
+    const gpus = await axios.get(`/api/v1/gpus?game=${encodeURIComponent(game)}`);
+    return gpus.data.map((gpu: any) => gpu.id);
   }
 };
 

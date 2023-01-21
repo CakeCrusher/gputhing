@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const GAMES = [
   "Cyberpunk 2077",
   "Witcher 3",
@@ -5,8 +7,10 @@ const GAMES = [
 ];
 
 export default {
-  getAllGames: () => {
-    return GAMES;
+  getAllGames: async () => {
+    const games = await axios.get('/api/v1/games');
+    return games.data.map((games: any) => games.id);
+    // return GAMES;
   }
 
 };
