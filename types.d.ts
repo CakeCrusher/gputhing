@@ -3,6 +3,12 @@ type GameDetails = null | {
   gpus: Gpu[]
 }
 
+type FullVideoDetails = {
+  video: Video;
+  game: Game;
+  gpu: Gpu;
+}
+
 type VideoExt = {
   id: string;
   gpu: string;
