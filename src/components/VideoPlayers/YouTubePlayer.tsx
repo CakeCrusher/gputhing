@@ -1,9 +1,10 @@
+import { ForwardedRef, forwardRef, Ref, useContext } from 'react';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import YouTube from "react-youtube";
 import type { YouTubePlayer, YouTubeEvent } from "react-youtube";
-import {Box} from '@mui/material';
-import {forwardRef, Ref} from 'react';
+import { Box } from '@mui/material';
+import { VideosContext } from '../context/VideosContext';
 
 type Props = {
   videoId: string
@@ -13,8 +14,7 @@ type Props = {
 function YouTubePlayer({
   videoId,
   handlePlayerReady,
-}: Props, ref: Ref<HTMLDivElement>) {
-
+}: Props, ref: ForwardedRef<VideoRef>) {
   const Box2 = styled(Box)(({ theme }) => ({
     height: "100%",
     width: `49.5%`,
@@ -30,13 +30,15 @@ function YouTubePlayer({
   }));
 
   return (
-    <Box2 id={videoId} ref={ref}>
+    <Box2 id={videoId} ref={ref} style={{overflow: 'hidden'}}>
       <YouTube
         opts={{
           height: 'auto',
+          position: 'relative',
           width: '100%'
         }}
-        videoId={videoId}
+        // TODO: Need to rework what app looks like with "no video selected"
+        videoId={videoId ? videoId : 'uL6R4XNRQoc'}
         onStateChange={(e) => console.log(e.target.getCurrentTime())}
         onReady={handlePlayerReady}
       />

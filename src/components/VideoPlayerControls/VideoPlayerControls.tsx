@@ -1,16 +1,24 @@
-import { Box, IconButton, SxProps } from "@mui/material";
-import ReplaySharpIcon from '@mui/icons-material/ReplaySharp';
-import { PlayArrowSharp } from "@mui/icons-material";
+import { Box, IconButton, SxProps, Typography } from "@mui/material";
+import { PauseSharp, PlayArrowSharp, SkipPreviousSharp } from "@mui/icons-material";
 
 import CustomSlider from "./CustomSlider";
-import {useState} from "react";
+import {useContext, useEffect, useState} from "react";
+import {VideosContext} from "../context/VideosContext";
+import useTimestampHandler from "./TimeHandler";
 
 type Props = {
-  p: any
+  startAt: number
+  endAt: number
 }
 
-export default function VideoPlayerControls({ p }: Props) {
-  const [isPaused, setIsPaused] = useState(true);
+var timer: any = null;
+
+export default function VideoPlayerControls({ startAt, endAt }: Props) {
+  const { timestamp, setTimestamp, isPaused, pause, play } = useTimestampHandler(0);
+  const { videoRefs } = useContext(VideosContext);
+  let playerRef1 = videoRefs.video1.player.current;
+  let playerRef2 = videoRefs.video2.player.current;
+
   const sx: SxProps = {
     display: 'flex',
     flexDirection: 'column',
@@ -18,12 +26,14 @@ export default function VideoPlayerControls({ p }: Props) {
   }
 
   function checkVideosLoaded(): boolean {
-    if (!p.player1) {
-      console.log("Null player: player1")
+    playerRef1 = videoRefs.video1.player.current;
+    playerRef2 = videoRefs.video2.player.current;
+    if (!playerRef1) {
+      console.log("Null player: player1", playerRef1);
       return false;
     }
-    if (!p.player2) {
-      console.log("Null player: player2")
+    if (!playerRef2) {
+      console.log("Null player: player2", playerRef2);
       return false;
     }
     return true;
@@ -31,45 +41,60 @@ export default function VideoPlayerControls({ p }: Props) {
 
   function playVideos() {
     if(checkVideosLoaded()) {
-      p.player1.playVideo();
-      p.player2.playVideo();
-      setIsPaused(false);
+      playerRef1.playVideo();
+      playerRef2.playVideo();
+      play();
     }
   }
 
   function pauseVideos() {
     if(checkVideosLoaded()) {
-      p.player1.pauseVideo();
-      p.player2.pauseVideo();
-      setIsPaused(true);
+      playerRef1.pauseVideo();
+      playerRef2.pauseVideo();
+      pause();
     }
   }
 
   function restart() {
     if(checkVideosLoaded()) {
-      p.player1.seekTo(0);
-      p.player2.seekTo(0);
+      playerRef1.seekTo(0);
+      playerRef2.seekTo(0);
+      setTimestamp(0);
     }
+  }
+
+  function seekTo(time: number) {
+    setTimestamp(time);
+    playerRef1.seekTo(Math.floor(time / 1000));
+    playerRef2.seekTo(Math.floor(time / 1000));
   }
 
   return (
     <Box sx={sx} id="controls" style={{backgroundColor: "rgba(0, 0, 0, 0.6)"}}>
       <Box sx={{flex: '1'}}>
-        <CustomSlider/>
+        <CustomSlider timeOffset={timestamp} timeLength={(endAt - startAt) * 1000} seekTo={seekTo}/>
       </Box>
       <Box sx={{flex: '2', display: 'flex'}}>
         <IconButton sx={{padding: '2', color: 'white'}} onClick={restart}>
-          <ReplaySharpIcon />
+          <SkipPreviousSharp onClick={restart}/>
         </IconButton>
         { isPaused ?
           <IconButton sx={{padding: '2', color: 'white'}} onClick={playVideos}>
             <PlayArrowSharp />
           </IconButton>
           :
-          <IconButton sx={{padding: '2', color: 'yellow'}} onClick={pauseVideos}>
-            <PlayArrowSharp />
+          <IconButton sx={{padding: '2', color: 'white'}} onClick={pauseVideos}>
+            <PauseSharp />
           </IconButton>
         }
+        <Box sx={{display: 'flex', alignItems: 'center'}}>
+          <Typography style={{color: '#d3d3d3', fontSize: "0.625em"}}>
+            {`${Math.max(
+              0, 
+              Math.floor( (timestamp - 200) / 1000)
+            )}`}
+          </Typography>
+        </Box>
       </Box>
     </Box>
   )

@@ -9,25 +9,22 @@ function ValueLabelComponent(props: any) {
   const { children, value } = props;
 
   return (
-    <Tooltip enterTouchDelay={0} placement="top" title={value}>
+    <Tooltip enterTouchDelay={0} placement="top" title={Math.round(value)}>
       {children}
     </Tooltip>
   );
 }
 
-
-const AirbnbSlider2 = styled(Slider)(({ theme }) => ({
+const AirbnbSlider2 = styled(Slider)((_x: any) => ({
   color: 'red',
   height: 3,
-  padding: '13px 0',
+  padding: 0,
   borderRadius: 0,
   '& .MuiSlider-thumb': {
     height: 1,
     width: 1,
     backgroundColor: 'currentColor',
-    '&:hover': {
-      boxShadow: '0 0 0 8px rgba(58, 133, 137, 0.16)',
-    },
+
     '& .airbnb-bar': {
       height: 9,
       width: 1,
@@ -37,12 +34,13 @@ const AirbnbSlider2 = styled(Slider)(({ theme }) => ({
     },
   },
   '& .MuiSlider-track': {
-    height: 3,
+    height: 4,
+    border: 'none',
   },
   '& .MuiSlider-rail': {
-    color: theme.palette.mode === 'dark' ? '#bfbfbf' : '#d8d8d8',
-    opacity: theme.palette.mode === 'dark' ? undefined : 1,
-    height: 3,
+    color: '#d8d8d8',
+    opacity: 1,
+    height: 4,
   },
   '&:hover': {
     '& .MuiSlider-thumb': {
@@ -57,9 +55,6 @@ function AirbnbThumbComponent(props: any) {
   return (
     <SliderThumb {...other}>
       {children}
-      <span className="airbnb-bar" />
-      <span className="airbnb-bar" />
-      <span className="airbnb-bar" />
     </SliderThumb>
   );
 }
@@ -68,17 +63,32 @@ AirbnbThumbComponent.propTypes = {
   children: PropTypes.node,
 };
 
-export default function CustomSlider() {
+type Props = {
+  timeOffset: number
+  timeLength: number
+  seekTo: any
+}
+
+export default function CustomSlider({ timeLength, timeOffset, seekTo }: Props) {
+  console.log("TIMELENGTH", timeLength);
+  const handleChange = (evt: any) => {
+    seekTo(evt.target.value);
+  }
+
   return (
-    <Box sx={{ width: 320 }}>
+    <Box sx={{ width: '100%' }}>
       <AirbnbSlider2
         valueLabelDisplay="auto"
         slots={{
           thumb: AirbnbThumbComponent,
-          valueLabel: ValueLabelComponent,
         }}
         aria-label="custom thumb label"
-        defaultValue={20}
+        defaultValue={0}
+        min={0}
+        max={timeLength} // TODO: Still need to verify this works
+        step={1} // TODO: Rounding errors when using floating points
+        value={timeOffset}
+        onChange={handleChange}
       />
     </Box>
   );

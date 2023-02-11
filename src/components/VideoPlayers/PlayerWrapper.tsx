@@ -1,14 +1,15 @@
-import { RefObject, useRef, useState } from "react"
+import { Ref, RefObject, useContext, useRef, useState } from "react"
 import { Box } from "@mui/system"
 import type { YouTubePlayer, YouTubeEvent } from "react-youtube";
 
 import YouTubePlayerComponent from "./YouTubePlayer"
+import PlayerHelper from "./PlayerHelper";
 import VideoPlayerControls from '@/components/VideoPlayerControls';
-import {backdropClasses} from "@mui/material";
+import {VideosContext} from "../context/VideosContext";
 
-const p: any = {
-  player1: {},
-  player2: {}
+const p: PlayerWrapperObject = {
+  player1: null,
+  player2: null
 }
 
 //TODO: replace any
@@ -29,10 +30,13 @@ export default function PlayerWrapper({
   videoData1,
   videoData2
 }: Props){
-  const player1Ref = useRef<HTMLDivElement>(null);
-  const player2Ref = useRef<HTMLDivElement>(null);
+  const { videoRefs } = useContext(VideosContext);
+  const containerRef1 = videoRefs.video1.container;
+  const containerRef2 = videoRefs.video2.container;
+  const playerRef1 = videoRefs.video1.player;
+  const playerRef2 = videoRefs.video2.player;
 
-  const changeSplit = (e: any) => {
+  const changeSplit = (_e: any) => {
     const root = document.getElementsByTagName("body")[0];
     const players = document.getElementById("players");
 
@@ -48,6 +52,7 @@ export default function PlayerWrapper({
     const playersBox = players.getBoundingClientRect();
 
     const mouseMove = (e: any) => {
+
       if(e.clientX < playersBox.right && e.clientX > playersBox.left) {
         let x1 = e.clientX - playersBox.left;
         let x2 = playersBox.width;
@@ -55,13 +60,13 @@ export default function PlayerWrapper({
         result = Math.max(result, .1);
         result = Math.min(result, .9);
         
-        if(player1Ref.current && player2Ref.current) {
-          player1Ref.current.style.width = `${result * 99}%`;
-          player2Ref.current.style.width = `${99 - result * 99}%`;
+        if(containerRef1.current && containerRef2.current) {
+          containerRef1.current.style.width = `${result * 99}%`;
+          containerRef2.current.style.width = `${99 - result * 99}%`;
         }
       }
     };
-    const mouseUp = (e: any) => {
+    const mouseUp = (_e: any) => {
       root.removeEventListener("mousemove", mouseMove);
       root.removeEventListener("mouseup", mouseUp);
     }
@@ -74,9 +79,13 @@ export default function PlayerWrapper({
     console.log("Player Ready: " + id)
     switch(id) {
       case 1:
-        p.player1 = e.target
+        playerRef1.current = e.target;
+        PlayerHelper.preparePlayer(playerRef1.current, videoData1);
+        break;
       case 2:
-        p.player2 = e.target
+        playerRef2.current = e.target
+        PlayerHelper.preparePlayer(playerRef2.current, videoData2);
+        break;
       default:
         console.warn("Invalid player id: " + id);
     }
@@ -103,7 +112,7 @@ export default function PlayerWrapper({
           }}
       >
         <YouTubePlayerComponent
-          ref={player1Ref}
+          ref={containerRef1}
           handlePlayerReady={handlePlayerReady(1)}
           videoId={videoData1 ? videoData1.videoId : ""}
         />
@@ -112,12 +121,12 @@ export default function PlayerWrapper({
           style={{width: "1%", backgroundColor: "black", cursor: "crosshair"}}
         />
         <YouTubePlayerComponent
-          ref={player2Ref}
+          ref={containerRef2}
           handlePlayerReady={handlePlayerReady(2)} 
           videoId={videoData2 ? videoData2.videoId : ""}
         />
       </div>
-      <VideoPlayerControls p={p}/>
+      <VideoPlayerControls startAt={0} endAt={3}/>
     </Box>
   )
 }

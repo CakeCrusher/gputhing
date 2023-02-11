@@ -1,4 +1,4 @@
-import React, { Context, createContext, useState } from 'react';
+import React, { Context, createContext, Ref, useRef, useState } from 'react';
 import { initializeVideos  } from './videos'
 
 type VideosContextProviderProps = {
@@ -7,6 +7,7 @@ type VideosContextProviderProps = {
 
 type VideosContextValue = {
   videos: (GpuData | null)[],
+  videoRefs: TwoVideoRefs,
   setVideos: React.Dispatch<React.SetStateAction<(GpuData | null)[]>> | null
 }
 
@@ -14,8 +15,20 @@ export const VideosContext: Context<VideosContextValue> = createContext({videos:
 
 export const VideosContextProvider = ({ children }: VideosContextProviderProps) => {
   const [videos, setVideos] = useState<(GpuData | null)[]>(initializeVideos)
+
+  const videoRefs: TwoVideoRefs = {
+    video1: {
+      player: useRef<HTMLDivElement>(null),
+      container: useRef<HTMLDivElement>(null),
+    },
+    video2: {
+      player: useRef<HTMLDivElement>(null),
+      container: useRef<HTMLDivElement>(null),
+    }
+  };
+
   return (
-    <VideosContext.Provider value={{videos, setVideos}}>
+    <VideosContext.Provider value={{videos, setVideos, videoRefs}}>
       {children}
     </VideosContext.Provider>
   )
