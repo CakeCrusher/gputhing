@@ -9,14 +9,8 @@ type FullVideoDetails = {
   gpu: Gpu;
 }
 
-type VideoExt = {
-  id: string;
+type VideoExt = Video & {
   gpu: string;
-  offset: string;
-  width: number;
-  start: string;
-  duration: number;
-  dlss: string;
 };
 
 type Game = {
@@ -36,9 +30,9 @@ type GameGpu = {
 
 type Video = {
   id: string;
-  offset: string;
+  offset: number;
   width: number;
-  start: string;
+  start: number;
   duration: number;
   dlss: string;
 };
