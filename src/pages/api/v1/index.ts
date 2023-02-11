@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import db from '@/utils/db';
+import { getGameImage } from '@/utils/externalApi/steam';
 
 const endpoint = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
@@ -8,7 +9,7 @@ const endpoint = async (req: NextApiRequest, res: NextApiResponse) => {
       return;
     }
 
-    const createdMetrics = []
+    const createdLogs = []
     const { video, game, gpu }: FullVideoDetails = req.body;
 
     if (!video.id || !game.id || !gpu.id) {
@@ -21,26 +22,29 @@ const endpoint = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const gameDoc = await db.collection('games').doc(game.id).get();
     if (!gameDoc.exists) {
-      createdMetrics.push('game: ' + game.id)
+      createdLogs.push('game: ' + game.id)
+      if (!game.imageUrl) {
+        game.imageUrl = getGameImage(game.id);
+      }
       const { id, ...gameData } = game;
       await db.collection('games').doc(id).set(gameData);
     }
     const gpuDoc = await db.collection('gpus').doc(gpu.id).get();
     if (!gpuDoc.exists) {
-      createdMetrics.push('gpu: ' + gpu.id)
+      createdLogs.push('gpu: ' + gpu.id)
       const { id, ...gpuData } = gpu;
       await db.collection('gpus').doc(id).set(gpuData);
     }
     const videoDoc = await db.collection('videos').doc(video.id).get();
     if (!videoDoc.exists) {
-      createdMetrics.push('video: ' + video.id)
+      createdLogs.push('video: ' + video.id)
       const { id, ...videoData } = video;
       await db.collection('videos').doc(id).set(videoData);
     }
     // create a game_gpu document if it does not exist
     const gameGpuDoc = await db.collection('game_gpu').doc(`${game.id}_${gpu.id}`).get();
     if (!gameGpuDoc.exists) {
-      createdMetrics.push('game_gpu: ' + `${game.id}_${gpu.id}` + '  encoded: ' + encodeURIComponent(`${game.id}_${gpu.id}`))
+      createdLogs.push('game_gpu: ' + `${game.id}_${gpu.id}` + '  encoded: ' + encodeURIComponent(`${game.id}_${gpu.id}`))
       await db.collection('game_gpu').doc(`${game.id}_${gpu.id}`).set({
         game: game.id,
         gpu: gpu.id,
@@ -50,7 +54,7 @@ const endpoint = async (req: NextApiRequest, res: NextApiResponse) => {
       // if it does exist, add the video id to the array
       // check if the video id is already in the array
       if (!gameGpuDoc.data()!.videoIds.includes(video.id)) {
-        createdMetrics.push('game_gpu.videoId: ' + video.id)
+        createdLogs.push('game_gpu.videoId: ' + video.id)
         const newVideoIdList = gameGpuDoc.data()!.videoIds;
         newVideoIdList.push(video.id);
         await db.collection('game_gpus').doc(`${game.id}_${gpu.id}`).update({
@@ -58,11 +62,11 @@ const endpoint = async (req: NextApiRequest, res: NextApiResponse) => {
         });
       }
     }
-    if (createdMetrics.length === 0) {
+    if (createdLogs.length === 0) {
       res.send('No new data was created');
       return;
     }
-    res.send("Successfully created: \n\n" + createdMetrics.join('\n'));
+    res.send("Successfully created: \n\n" + createdLogs.join('\n'));
   }
 }
 

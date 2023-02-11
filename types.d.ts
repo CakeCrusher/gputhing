@@ -15,6 +15,7 @@ type VideoExt = Video & {
 
 type Game = {
   id: string;
+  imageUrl: string;
 };
 
 type Gpu = {
