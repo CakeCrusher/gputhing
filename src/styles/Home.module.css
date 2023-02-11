@@ -1,10 +1,22 @@
+.bg {
+  position: absolute;
+  /* add a background image that consumes the entire component without resizing */
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* make only the background image blurry */
+  filter: blur(1px);
+}
 .container {
+  position: relative;
   display: flex;
   flex-direction: column;
+  background-color: black;
   align-items: center;
   height: 100vh;
   width: 100vw;
-  overflow-y: scroll;
 }
 .field {
   width: 15rem;
@@ -23,7 +35,7 @@
   align-items: center;
 }
 .details {
-  width: 100%,
+  width: 100%;
 }
 .videoWrapper {
   display: flex;

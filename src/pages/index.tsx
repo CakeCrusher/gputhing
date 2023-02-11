@@ -107,6 +107,11 @@ export default function Home() {
     },
   }));
 
+  let backgroundImage = "http://blog.logicalincrements.com/wp-content/uploads/2014/09/gtx980release.jpg";
+  if (gameDetails?.game?.imageUrl) {
+    backgroundImage = gameDetails.game.imageUrl;
+  }
+
   return (
     <>
       <Head>
@@ -120,6 +125,7 @@ export default function Home() {
       </Head>
 
       <div className={styles.container}>
+        <div className={styles.bg} style={{ backgroundImage: `url("${backgroundImage}")` }} />
         <div id="selector">
           <VideoQuerySelectors
             {...{
