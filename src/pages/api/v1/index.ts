@@ -24,7 +24,7 @@ const endpoint = async (req: NextApiRequest, res: NextApiResponse) => {
     if (!gameDoc.exists) {
       createdLogs.push('game: ' + game.id)
       if (!game.imageUrl) {
-        game.imageUrl = getGameImage(game.id);
+        game.imageUrl = await getGameImage(game.id);
       }
       const { id, ...gameData } = game;
       await db.collection('games').doc(id).set(gameData);

@@ -18,6 +18,22 @@ export default function Home() {
   const [allGames, setAllGames] = useState<Game[]>([]);
   const [allGpus, setAllGpus] = useState<Gpu[]>([]);
 
+  // whenever gameDetails changes update the url to include params in the form "?game=gameName&gpuLeft=gpuName&gpuRight=gpuName"
+  // useEffect(() => {
+  //   if (gameDetails?.game?.id) {
+  //     const params = new URLSearchParams();
+  //     params.append("game", gameDetails.game.id);
+  //     if (gameDetails.gpus[0]) {
+  //       params.append("gpuLeft", gameDetails.gpus[0].id);
+  //     }
+  //     if (gameDetails.gpus[1]) {
+  //       params.append("gpuRight", gameDetails.gpus[1].id);
+  //     }
+  //     window.history.replaceState({}, "", `?${params.toString()}`);
+  //   }
+  // }, [gameDetails]);
+
+
   useEffect(() => {
     const getGamesAndGpus = async () => {
       const allGames = await query.games.getAllGames();
