@@ -94,6 +94,8 @@ export default function Home() {
     }
   }, [gameDetails, gpuLeft, setGpuLeft, gpuRight, setGpuRight]);
 
+  // TODO: when thegame changes and the gpus are reset some of the players do not update (same as before game change)
+    // for example when you use "cyberpunk" and set the gpus then go to "lost ark", some of the players stay the same as before
   // updates the context for the videos
   useEffect(() => {
     const setNewVideos = async () => {
