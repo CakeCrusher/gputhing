@@ -81,6 +81,7 @@ export default function VideoQuerySelectors({
     <Box sx={{display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center"}}>
       <Autocomplete
         disablePortal
+        value={gameDetails?.game?.id || null}
         className={styles.field}
         onChange={(_e, value: string | null) => handleSetGame(value)}
         options={allGameIds}

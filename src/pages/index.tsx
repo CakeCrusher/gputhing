@@ -19,22 +19,28 @@ export default function Home() {
   const [allGpus, setAllGpus] = useState<Gpu[]>([]);
 
   // whenever gameDetails changes update the url to include params in the form "?game=gameName&gpuLeft=gpuName&gpuRight=gpuName"
-  // useEffect(() => {
-  //   if (gameDetails?.game?.id) {
-  //     const params = new URLSearchParams();
-  //     params.append("game", gameDetails.game.id);
-  //     if (gameDetails.gpus[0]) {
-  //       params.append("gpuLeft", gameDetails.gpus[0].id);
-  //     }
-  //     if (gameDetails.gpus[1]) {
-  //       params.append("gpuRight", gameDetails.gpus[1].id);
-  //     }
-  //     window.history.replaceState({}, "", `?${params.toString()}`);
-  //   }
-  // }, [gameDetails]);
-
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (gameDetails?.game?.id) {
+      params.append("game", gameDetails.game.id);
+    }
+    if (gpuLeft) {
+      params.append("gpuLeft", gpuLeft);
+    }
+    if (gpuRight) {
+      params.append("gpuRight", gpuRight);
+    }
+    // change params without rerender or reload
+    const urlReplace = params.toString() ? `?${params.toString()}` : "/";
+    window.history.replaceState({}, "", urlReplace);
+  }, [gameDetails, gpuLeft, gpuRight]);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const gameName = decodeURIComponent(params.get("game") || "");
+    const gpuLeft = decodeURIComponent(params.get("gpuLeft") || "");
+    const gpuRight = decodeURIComponent(params.get("gpuRight") || "");
+
     const getGamesAndGpus = async () => {
       const allGames = await query.games.getAllGames();
       console.log("allGames: ", allGames);
@@ -42,26 +48,48 @@ export default function Home() {
       const allGpus = await query.gpus.getAllGpus();
       console.log("allGpus: ", allGpus);
       setAllGpus(allGpus);
+
+      // if the url params are valid, set the gameDetails and gpus
+      const currentGame = allGames.find(
+        (currGame: Game) => currGame.id === gameName
+      );
+      if (
+        gameName &&
+        currentGame &&
+        (!gameDetails?.game || gameName !== gameDetails?.game.id)
+      ) {
+        const gpusForGame = await query.gpus.getGpusForGame(gameName);
+        setGameDetails({
+          game: currentGame,
+          gpus: gpusForGame,
+        });
+      }
+      if (gpuLeft && allGpus.find((gpu: Gpu) => gpu.id === gpuLeft)) {
+        setGpuLeft(gpuLeft);
+      }
+      if (gpuRight && allGpus.find((gpu: Gpu) => gpu.id === gpuRight)) {
+        setGpuRight(gpuRight);
+      }
     };
     getGamesAndGpus();
-  }, []);
-
-  const test = async () => {
-    const t = await query.gpus.getGpusForGame("Cyberpunk 2077");
-    console.log("test: ", t);
-  };
-  useEffect(() => {
-    test();
   }, []);
 
   // update gpuRight and gpuLeft if the gameDetails changes
   useEffect(() => {
     console.log("gpuLeft: ", gpuLeft);
-    if (gpuLeft && gameDetails && !gameDetails?.gpus.find((gpu) => gpu.id === gpuLeft)) {
+    if (
+      gpuLeft &&
+      gameDetails &&
+      !gameDetails?.gpus.find((gpu) => gpu.id === gpuLeft)
+    ) {
       console.log("gpuLeft unset in useEffect");
       setGpuLeft(null);
     }
-    if (gpuRight && gameDetails && !gameDetails?.gpus.find((gpu) => gpu.id === gpuRight)) {
+    if (
+      gpuRight &&
+      gameDetails &&
+      !gameDetails?.gpus.find((gpu) => gpu.id === gpuRight)
+    ) {
       setGpuRight(null);
     }
   }, [gameDetails, gpuLeft, setGpuLeft, gpuRight, setGpuRight]);
@@ -77,7 +105,9 @@ export default function Home() {
           gameDetails?.game.id,
           gpuLeft
         );
-        newVideos[0] = newVideo ? {...newVideo, gpu: gpuLeft} : null;
+        if (newVideo) {
+          newVideos[0] = newVideo ? { ...newVideo, gpu: gpuLeft } : null;
+        }
       } else {
         console.log("videos[0] unset in useEffect");
         newVideos[0] = null;
@@ -89,7 +119,9 @@ export default function Home() {
           gameDetails?.game.id,
           gpuRight
         );
-        newVideos[1] = newVideo ? {...newVideo, gpu: gpuRight} : null;
+        if (newVideo) {
+          newVideos[1] = newVideo ? { ...newVideo, gpu: gpuRight } : null;
+        }
       } else {
         console.log("videos[1] unset in useEffect");
         newVideos[1] = null;
@@ -123,7 +155,8 @@ export default function Home() {
     },
   }));
 
-  let backgroundImage = "http://blog.logicalincrements.com/wp-content/uploads/2014/09/gtx980release.jpg";
+  let backgroundImage =
+    "http://blog.logicalincrements.com/wp-content/uploads/2014/09/gtx980release.jpg";
   if (gameDetails?.game?.imageUrl) {
     backgroundImage = gameDetails.game.imageUrl;
   }
@@ -141,7 +174,10 @@ export default function Home() {
       </Head>
 
       <div className={styles.container}>
-        <div className={styles.bg} style={{ backgroundImage: `url("${backgroundImage}")` }} />
+        <div
+          className={styles.bg}
+          style={{ backgroundImage: `url("${backgroundImage}")` }}
+        />
         <div id="selector">
           <VideoQuerySelectors
             {...{
